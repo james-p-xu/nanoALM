@@ -15,11 +15,13 @@ def train_vqvae():
     model = VQVAE(
         in_channels=1,  # mono audio
         embedding_dim=64,
-        num_embeddings=512,  # codebook size
-        hidden_dims=[32, 64, 128, 256]
+        num_embeddings=2048,  # codebook size
+        hidden_dims=[32, 64, 128, 256, 512, 512, 512, 512, 512]
     ).to(device)
     
-    dataset = LJSpeechDataset("ljspeech_raw", segment_length=8192)
+    # 5 seconds = 5 * 44100 = 220,500
+    segment_length = (220500 // 512) * 512
+    dataset = LJSpeechDataset("/shared/people/james/LJSpeech-1.1/wavs", segment_length=segment_length)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=4)
     
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
